@@ -39,6 +39,14 @@ pub unsafe extern "C" fn _start() -> ! {
     )
 }
 
+/// Minimal argument buffer for musl's __libc_start_main.
+/// musl computes `envp = argv + argc + 1` and scans envp then auxv.
+/// With argc=0, musl reads argv[0] as argv terminator, argv[1] as envp
+/// terminator, and argv[2..3] as auxv AT_NULL entry. All must be zero
+/// and in valid RAM.
+#[unsafe(no_mangle)]
+static __musl_argv: [usize; 4] = [0; 4];
+
 /// Runtime bootstrap. Called by `_start` after gp/sp are initialized.
 /// Sets up a fake argc/argv/envp stack frame and enters musl.
 #[unsafe(no_mangle)]
@@ -50,7 +58,7 @@ pub unsafe extern "C" fn __runtime_bootstrap() -> ! {
         // 2. Prepare args for __libc_start_main(main, argc, argv, init, fini, NULL)
         "la   a0, __main_entry", // main_fn
         "li   a1, 0",            // argc = 0
-        "li   a2, 0",            // argv = NULL
+        "la   a2, __musl_argv",  // argv = valid zeroed buffer in RAM
         "la   a3, _init",        // init
         "la   a4, _fini",        // fini
         "li   a5, 0",            // ldso_dummy = NULL
