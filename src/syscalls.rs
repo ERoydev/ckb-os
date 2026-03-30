@@ -43,8 +43,8 @@ pub fn syscall_handle(
         // Signals (stubs)
         SYS_RT_SIGACTION => 0,
         SYS_RT_SIGPROCMASK => 0,
-        SYS_TKILL => unsafe { __platform_abort() },
-        SYS_TGKILL => unsafe { __platform_abort() },
+        SYS_TKILL => unsafe { __platform_abort(a1 as i32) },
+        SYS_TGKILL => unsafe { __platform_abort(a2 as i32) },
 
         // Everything else
         _ => ENOSYS,
