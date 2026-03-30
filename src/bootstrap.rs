@@ -12,7 +12,36 @@ unsafe extern "C" {
     ) -> i32;
 }
 
-/// ELF entry point. Called by the linker (`-nostartfiles`).
+/// Hardware-level entry point. The linker script sets `ENTRY(_start)` and
+/// `.text.boot` is placed first in the text segment, so this is guaranteed
+/// to live at the RAM base address (0x80000000).
+///
+/// Initializes the global pointer and stack pointer, then tail-calls into
+/// the runtime bootstrap which sets up musl and calls main().
+#[unsafe(naked)]
+#[link_section = ".text.boot"]
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn _start() -> ! {
+    naked_asm!(
+        // Global pointer init (RISC-V ABI requirement).
+        // Must use norelax so the assembler doesn't try to relax this
+        // instruction into a gp-relative form (gp isn't set yet).
+        ".option push",
+        ".option norelax",
+        "lla gp, __global_pointer$",
+        ".option pop",
+
+        // Stack pointer — __stack_top is provided by the linker script.
+        // Align to 16 bytes per RISC-V calling convention.
+        "lla sp, __stack_top",
+        "andi sp, sp, -16",
+
+        // Enter runtime bootstrap (sets up musl, calls main)
+        "tail __runtime_bootstrap",
+    )
+}
+
+/// Runtime bootstrap. Called by `_start` after gp/sp are initialized.
 /// Sets up a fake argc/argv/envp stack frame and enters musl.
 #[unsafe(no_mangle)]
 #[unsafe(naked)]

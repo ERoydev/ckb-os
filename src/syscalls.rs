@@ -16,11 +16,19 @@ const SYS_MPROTECT: usize = 226;
 
 unsafe extern "C" {
     fn __platform_exit(code: u32) -> !;
-    fn __platform_abort() -> !;
+    fn __platform_abort(sig: i32) -> !;
 }
 
 /// Dispatch a Linux syscall. Called from the ecall trap handler.
-pub fn syscall_handle(a0: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize, nr: usize) -> isize {
+pub fn syscall_handle(
+    a0: usize,
+    a1: usize,
+    a2: usize,
+    a3: usize,
+    a4: usize,
+    a5: usize,
+    nr: usize,
+) -> isize {
     match nr {
         // Memory
         SYS_BRK => memory::sys_brk(a0),
