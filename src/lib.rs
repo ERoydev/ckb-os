@@ -1,6 +1,6 @@
 #![no_std]
 
-#[cfg(target_arch = "riscv64")]
+#[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 pub mod bootstrap;
 mod memory;
 mod syscalls;
