@@ -19,7 +19,7 @@ unsafe extern "C" {
 /// Initializes the global pointer and stack pointer, then tail-calls into
 /// the runtime bootstrap which sets up musl and calls main().
 #[unsafe(naked)]
-#[link_section = ".text.boot"]
+#[unsafe(link_section = ".text.boot")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn _start() -> ! {
     naked_asm!(
@@ -30,12 +30,10 @@ pub unsafe extern "C" fn _start() -> ! {
         ".option norelax",
         "lla gp, __global_pointer$",
         ".option pop",
-
         // Stack pointer — __stack_top is provided by the linker script.
         // Align to 16 bytes per RISC-V calling convention.
         "lla sp, __stack_top",
         "andi sp, sp, -16",
-
         // Enter runtime bootstrap (sets up musl, calls main)
         "tail __runtime_bootstrap",
     )
@@ -49,15 +47,13 @@ pub unsafe extern "C" fn __runtime_bootstrap() -> ! {
     naked_asm!(
         // 1. Init heap + trap vector
         "call __platform_bootstrap",
-
         // 2. Prepare args for __libc_start_main(main, argc, argv, init, fini, NULL)
-        "la   a0, __main_entry",  // main_fn
-        "li   a1, 0",             // argc = 0
-        "li   a2, 0",             // argv = NULL
-        "la   a3, _init",         // init
-        "la   a4, _fini",         // fini
-        "li   a5, 0",             // ldso_dummy = NULL
-
+        "la   a0, __main_entry", // main_fn
+        "li   a1, 0",            // argc = 0
+        "li   a2, 0",            // argv = NULL
+        "la   a3, _init",        // init
+        "la   a4, _fini",        // fini
+        "li   a5, 0",            // ldso_dummy = NULL
         // 3. Tail-call into musl
         "tail __libc_start_main",
     );
