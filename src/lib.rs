@@ -2,6 +2,7 @@
 
 #[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 pub mod bootstrap;
+mod handlers;
 mod memory;
 mod syscalls;
 
