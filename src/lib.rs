@@ -11,5 +11,6 @@ mod riscv64;
 mod syscalls;
 mod stack;
 
+pub use allocator::init as init_heap;
 pub use errno::*;
 pub use syscalls::syscall_handle;
