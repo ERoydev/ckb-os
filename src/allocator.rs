@@ -1,21 +1,23 @@
+use buddy_system_allocator::LockedHeap;
 use core::alloc::Layout;
-use zeroos_allocator_buddy::BUDDY_ALLOCATOR_OPS;
 
-// Interface to the buddy allocator
+static HEAP: LockedHeap<32> = LockedHeap::empty();
 
 pub fn init(heap_start: usize, heap_size: usize) {
-    (BUDDY_ALLOCATOR_OPS.init)(heap_start, heap_size)
+    unsafe {
+        HEAP.lock().init(heap_start, heap_size);
+    }
 }
 
 pub fn alloc(layout: Layout) -> *mut u8 {
-    (BUDDY_ALLOCATOR_OPS.alloc)(layout)
+    HEAP.lock()
+        .alloc(layout)
+        .map(|nn| nn.as_ptr())
+        .unwrap_or(core::ptr::null_mut())
 }
 
 pub fn dealloc(ptr: *mut u8, layout: Layout) {
-    (BUDDY_ALLOCATOR_OPS.dealloc)(ptr, layout)
-}
-
-#[allow(dead_code)]
-pub fn realloc(ptr: *mut u8, old_layout: Layout, new_size: usize) -> *mut u8 {
-    (BUDDY_ALLOCATOR_OPS.realloc)(ptr, old_layout, new_size)
+    unsafe {
+        HEAP.lock().dealloc(core::ptr::NonNull::new_unchecked(ptr), layout);
+    }
 }

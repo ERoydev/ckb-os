@@ -12,23 +12,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "cfg-if"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
-
-[[package]]
 name = "ckb-os"
 version = "0.1.0"
 dependencies = [
- "zeroos-allocator-buddy",
+ "buddy_system_allocator",
 ]
-
-[[package]]
-name = "libc"
-version = "0.2.183"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5b646652bf6661599e1da8901b3b9522896f01e736bad5f723fe7a3a27f899d"
 
 [[package]]
 name = "lock_api"
@@ -52,31 +40,4 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
 dependencies = [
  "lock_api",
-]
-
-[[package]]
-name = "zeroos-allocator-buddy"
-version = "0.1.0"
-source = "git+https://github.com/LayerZero-Labs/ZeroOS?rev=c4087a8#c4087a825bf3e8157dbb2da01ee196d2a9841e4c"
-dependencies = [
- "buddy_system_allocator",
- "zeroos-foundation",
-]
-
-[[package]]
-name = "zeroos-debug"
-version = "0.1.0"
-source = "git+https://github.com/LayerZero-Labs/ZeroOS?rev=c4087a8#c4087a825bf3e8157dbb2da01ee196d2a9841e4c"
-dependencies = [
- "cfg-if",
-]
-
-[[package]]
-name = "zeroos-foundation"
-version = "0.1.0"
-source = "git+https://github.com/LayerZero-Labs/ZeroOS?rev=c4087a8#c4087a825bf3e8157dbb2da01ee196d2a9841e4c"
-dependencies = [
- "cfg-if",
- "libc",
- "zeroos-debug",
 ]
