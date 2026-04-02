@@ -1,4 +1,4 @@
-use crate::memory;
+mod memory;
 
 unsafe extern "C" {
     fn __platform_exit(code: u32) -> !;
@@ -20,6 +20,22 @@ pub fn sys_munmap(a0: usize, a1: usize) -> isize {
 
 pub fn sys_mprotect(a0: usize, a1: usize, a2: usize) -> isize {
     memory::sys_mprotect(a0, a1, a2)
+}
+
+// I/O
+pub fn sys_write(_fd: usize, _buf: usize, count: usize) -> isize {
+    count as isize
+}
+
+/// writev(fd, iov, iovcnt) — sum all iov_len fields to pretend everything was written
+pub fn sys_writev(_fd: usize, iov: usize, iovcnt: usize) -> isize {
+    let mut total = 0usize;
+    for i in 0..iovcnt {
+        // struct iovec { *buf, len } — 2 usizes (16 bytes on rv64)
+        let len = unsafe { core::ptr::read((iov + i * 16 + 8) as *const usize) };
+        total += len;
+    }
+    total as isize
 }
 
 // Process exit

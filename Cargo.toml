@@ -7,3 +7,4 @@ edition = "2024"
 name = "ckb_os"
 
 [dependencies]
+zeroos-allocator-buddy = { git = "https://github.com/LayerZero-Labs/ZeroOS", rev = "c4087a8" }

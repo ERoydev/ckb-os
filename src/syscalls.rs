@@ -1,6 +1,5 @@
+use crate::errno::ENOSYS;
 use crate::handlers;
-
-const ENOSYS: isize = -38;
 
 // Syscall numbers (riscv64 Linux ABI)
 const SYS_EXIT: usize = 93;
@@ -9,6 +8,8 @@ const SYS_TKILL: usize = 130;
 const SYS_TGKILL: usize = 131;
 const SYS_RT_SIGACTION: usize = 134;
 const SYS_RT_SIGPROCMASK: usize = 135;
+const SYS_WRITE: usize = 64;
+const SYS_WRITEV: usize = 66;
 const SYS_BRK: usize = 214;
 const SYS_MUNMAP: usize = 215;
 const SYS_MMAP: usize = 222;
@@ -30,6 +31,10 @@ pub fn syscall_handle(
         SYS_MMAP => handlers::sys_mmap(a0, a1, a2, a3, a4, a5),
         SYS_MUNMAP => handlers::sys_munmap(a0, a1),
         SYS_MPROTECT => handlers::sys_mprotect(a0, a1, a2),
+
+        // I/O — write(fd, buf, count): pretend all bytes were written
+        SYS_WRITE => handlers::sys_write(a0, a1, a2),
+        SYS_WRITEV => handlers::sys_writev(a0, a1, a2),
 
         // Process
         SYS_EXIT => handlers::sys_exit(a0),

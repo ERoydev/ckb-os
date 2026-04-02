@@ -1,10 +1,15 @@
 #![no_std]
 
+mod allocator;
 #[cfg(all(target_arch = "riscv64", target_os = "linux"))]
 pub mod bootstrap;
+mod errno;
 mod handlers;
-mod memory;
+mod mman;
+#[cfg(all(target_arch = "riscv64", target_os = "linux"))]
+mod riscv64;
 mod syscalls;
+mod stack;
 
-pub use memory::init_memory;
+pub use errno::*;
 pub use syscalls::syscall_handle;
