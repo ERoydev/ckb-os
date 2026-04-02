@@ -14,7 +14,10 @@ struct DownwardStack {
 impl DownwardStack {
     #[inline]
     fn new(stack_top: usize, buffer_bottom: usize) -> Self {
-        Self { sp: stack_top, buffer_bottom }
+        Self {
+            sp: stack_top,
+            buffer_bottom,
+        }
     }
 
     #[inline(always)]
@@ -56,7 +59,11 @@ fn generate_random_bytes(entropy: &[u64]) -> (u64, u64) {
 /// # Safety
 /// `stack_top` must point to a valid, writable stack region with enough space.
 #[inline]
-pub unsafe fn build_musl_stack(stack_top: usize, stack_bottom: usize, program_name: &'static [u8]) -> usize {
+pub unsafe fn build_musl_stack(
+    stack_top: usize,
+    stack_bottom: usize,
+    program_name: &'static [u8],
+) -> usize {
     let mut ds = DownwardStack::new(stack_top, stack_bottom);
 
     // 16 bytes of pseudo-random data for AT_RANDOM (musl uses this for stack canary)

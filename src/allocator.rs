@@ -15,6 +15,7 @@ pub fn dealloc(ptr: *mut u8, layout: Layout) {
     (BUDDY_ALLOCATOR_OPS.dealloc)(ptr, layout)
 }
 
+#[allow(dead_code)]
 pub fn realloc(ptr: *mut u8, old_layout: Layout, new_size: usize) -> *mut u8 {
     (BUDDY_ALLOCATOR_OPS.realloc)(ptr, old_layout, new_size)
 }
